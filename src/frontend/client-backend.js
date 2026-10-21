@@ -457,29 +457,58 @@
         return audit;
       }
 
-      // 7. POST /api/companies/:id/messages
-      const msgMatch = path.match(/^\/api\/companies\/([^/]+)\/messages$/);
+      // 7. POST /api/companies/:id/message ou /api/companies/:id/messages
+      const msgMatch = path.match(/^\/api\/companies\/([^/]+)\/messages?$/);
       if (msgMatch && method === 'POST') {
         const id = msgMatch[1];
         const companies = getStorage('companies', []);
         const comp = companies.find(c => c.id === id);
         if (!comp) throw new Error('Empresa não encontrada');
 
-        const channel = body.channel || 'WHATSAPP';
+        const channel = (body.channel || 'WHATSAPP').toUpperCase();
+        const recipient = channel === 'WHATSAPP' 
+          ? (comp.whatsapp || comp.phone || '(21) 98849-3857') 
+          : (comp.email || 'contato@empresa.com');
+
+        const subject = channel === 'EMAIL' ? `Oportunidade de Novos Clientes para ${comp.name}` : null;
+        const msgBody = channel === 'WHATSAPP'
+          ? `Olá, equipe da ${comp.name}! Acompanhei o ótimo trabalho e a reputação de vocês em ${comp.city}. Notei que vocês ainda não possuem um site institucional com botão direto para WhatsApp. Criamos páginas de alta conversão que transformam pesquisas no Google em novos contatos no seu WhatsApp. Posso te enviar uma prévia de 2 minutos sem compromisso?`
+          : `Prezados responsáveis pela ${comp.name},\n\nIdentificamos uma excelente oportunidade para ampliar a captação de clientes locais em ${comp.city}. Atualmente seu estabelecimento conta com ótima avaliação, porém sem um canal de captura web estruturado.\n\nGostaria de compartilhar uma análise rápida de como podemos posicionar sua marca no topo das buscas locais e converter mais orçamentos.\n\nPodemos conversar 5 minutos esta semana?`;
+
         const msg = {
           id: 'msg_' + Date.now(),
           company_id: id,
           channel: channel,
-          recipient: channel === 'WHATSAPP' ? (comp.whatsapp || comp.phone) : (comp.email || 'contato@empresa.com'),
-          subject: channel === 'EMAIL' ? `Oportunidade de Novos Clientes para ${comp.name}` : null,
-          body: `Olá, equipe da ${comp.name}! Acompanhei o ótimo trabalho e a reputação de vocês em ${comp.city}. Notei que vocês ainda não possuem um site institucional com botão direto para WhatsApp. Criamos páginas de alta conversão que transformam pesquisas no Google em novos contatos no seu WhatsApp. Posso te enviar uma prévia de 2 minutos sem compromisso?`,
+          recipient: recipient,
+          subject: subject,
+          body: msgBody,
           status: 'WAITING_APPROVAL',
+          input_data_json: JSON.stringify({
+            name: comp.name,
+            city: comp.city,
+            category: comp.category,
+            rating: comp.rating,
+            phone: comp.phone,
+            whatsapp: comp.whatsapp
+          }),
           created_at: new Date().toISOString()
         };
 
         const messages = getStorage('messages', []);
         messages.unshift(msg);
         setStorage('messages', messages);
+
+        const logs = getStorage('logs', []);
+        logs.unshift({
+          id: 'log_' + Date.now(),
+          level: 'INFO',
+          category: 'MESSAGES',
+          action: 'MESSAGE_GENERATED',
+          message: `Minuta de mensagem gerada para ${comp.name} via ${channel}.`,
+          created_at: new Date().toISOString()
+        });
+        setStorage('logs', logs);
+
         return msg;
       }
 
@@ -500,6 +529,55 @@
           comp.crm_stage = 'CONTATO APROVADO';
           setStorage('companies', companies);
         }
+
+        const logs = getStorage('logs', []);
+        logs.unshift({
+          id: 'log_' + Date.now(),
+          level: 'INFO',
+          category: 'MESSAGES',
+          action: 'MESSAGE_APPROVED',
+          message: `Mensagem aprovada para ${comp ? comp.name : 'empresa'}. Lead avançou para CONTATO APROVADO.`,
+          created_at: new Date().toISOString()
+        });
+        setStorage('logs', logs);
+
+        return { success: true, message: msg };
+      }
+
+      // POST /api/messages/:id/reject
+      const rejectMatch = path.match(/^\/api\/messages\/([^/]+)\/reject$/);
+      if (rejectMatch && method === 'POST') {
+        const msgId = rejectMatch[1];
+        const messages = getStorage('messages', []);
+        const msg = messages.find(m => m.id === msgId);
+        if (!msg) throw new Error('Mensagem não encontrada');
+
+        msg.status = 'REJECTED';
+        msg.rejection_reason = body.reason || 'Rejeitado pelo operador';
+        setStorage('messages', messages);
+        return { success: true, message: msg };
+      }
+
+      // PUT /api/messages/:id
+      const editMsgMatch = path.match(/^\/api\/messages\/([^/]+)$/);
+      if (editMsgMatch && method === 'PUT') {
+        const msgId = editMsgMatch[1];
+        const messages = getStorage('messages', []);
+        const msg = messages.find(m => m.id === msgId);
+        if (!msg) throw new Error('Mensagem não encontrada');
+
+        if (body.body) msg.body = body.body;
+        if (body.subject !== undefined) msg.subject = body.subject;
+        if (body.approveNow) {
+          msg.status = 'APPROVED';
+          const companies = getStorage('companies', []);
+          const comp = companies.find(c => c.id === msg.company_id);
+          if (comp) {
+            comp.crm_stage = 'CONTATO APROVADO';
+            setStorage('companies', companies);
+          }
+        }
+        setStorage('messages', messages);
         return { success: true, message: msg };
       }
 
