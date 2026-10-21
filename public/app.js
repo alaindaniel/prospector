@@ -231,6 +231,10 @@ async function reloadCompanyDetail(companyId) {
 }
 
 function renderCompanyDetail(detail) {
+  if (!detail || !detail.company) {
+    console.error('Dados da empresa não encontrados ou formato inválido:', detail);
+    return;
+  }
   const { company, latestAudit, latestScore, latestMessage, proposals, communications } = detail;
 
   // Header do Modal

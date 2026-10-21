@@ -348,14 +348,14 @@
         return { imported, updated: 0, companies };
       }
 
-      // 4. GET /api/companies
-      if (path.startsWith('/api/companies') && method === 'GET' && !path.includes('/', 15)) {
+      // 4. GET /api/companies (lista todas ou filtradas)
+      if ((path === '/api/companies' || path.startsWith('/api/companies?')) && method === 'GET') {
         let list = getStorage('companies', []);
         return list;
       }
 
-      // 5. GET /api/companies/:id
-      const detailMatch = path.match(/^\/api\/companies\/([^/]+)$/);
+      // 5. GET /api/companies/:id (detalhes de uma empresa específica)
+      const detailMatch = path.match(/^\/api\/companies\/([^/?]+)(?:\?.*)?$/);
       if (detailMatch && method === 'GET') {
         const id = detailMatch[1];
         const companies = getStorage('companies', []);
