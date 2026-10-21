@@ -4,7 +4,7 @@
   "description": "Plataforma estruturada de prospecção B2B, auditoria digital, diagnóstico por IA, aprovação humana e CRM em pipeline.",
   "main": "dist/backend/server.js",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && node -e \"const fs=require('fs'); fs.mkdirSync('public', {recursive:true}); ['index.html','styles.css','app.js','client-backend.js'].forEach(f=>fs.copyFileSync(f, 'public/'+f));\"",
     "start": "node dist/backend/server.js",
     "dev": "tsc && node dist/backend/server.js",
     "seed": "tsc && node dist/database/seed.js",

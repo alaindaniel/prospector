@@ -1,6 +1,7 @@
 {
   "version": 2,
   "name": "prospector-ia",
+  "outputDirectory": "public",
   "cleanUrls": true,
   "rewrites": [
     { "source": "/((?!.*\\..*).*)", "destination": "/index.html" }
