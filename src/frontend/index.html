@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prospector IA — Prospecção, Auditoria Digital & CRM</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Header Principal -->
+  <header class="app-header">
+    <div class="header-left">
+      <div class="logo">
+        <span class="logo-icon">⚡</span>
+        <span class="logo-text">Prospector <strong>IA</strong></span>
+      </div>
+      <span class="badge badge-phase">FASE 1 — MVP FUNCIONAL</span>
+    </div>
+
+    <!-- Navegação Superior -->
+    <nav class="main-nav">
+      <button class="nav-btn active" data-view="companies">🏢 Empresas</button>
+      <button class="nav-btn" data-view="crm">📊 Pipeline CRM</button>
+      <button class="nav-btn" data-view="automations">⚙️ Automações</button>
+      <button class="nav-btn" data-view="integrations">🔌 Integrações</button>
+      <button class="nav-btn" data-view="logs">📜 Logs do Sistema</button>
+    </nav>
+
+    <div class="header-right">
+      <button class="btn btn-secondary btn-sm" id="btnCleanDatabase" style="border-color: rgba(239, 68, 68, 0.4); color: #fca5a5;" title="Apaga todas as empresas para iniciar limpo">🗑️ Limpar Banco</button>
+      <button class="btn btn-secondary btn-sm" id="btnOpenManualModal">✍️ Cadastro Manual</button>
+      <button class="btn btn-primary btn-sm" id="btnOpenProspectModal">🚀 Prospectar Empresas</button>
+    </div>
+  </header>
+
+  <!-- Métricas do Topo -->
+  <section class="stats-bar">
+    <div class="stat-card">
+      <span class="stat-label">Total de Empresas</span>
+      <span class="stat-value" id="statTotalCompanies">-</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">Aguardando Aprovação</span>
+      <span class="stat-value text-amber" id="statWaitingApproval">-</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">Contato Aprovado</span>
+      <span class="stat-value text-emerald" id="statApprovedContacts">-</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">Regiões Ativas</span>
+      <span class="stat-value text-indigo" id="statActiveRegions">-</span>
+    </div>
+  </section>
+
+  <!-- Conteúdo Principal Dinâmico -->
+  <main class="app-content">
+
+    <!-- VIEW 1: EMPRESAS -->
+    <section id="view-companies" class="view-section active">
+      <div class="section-toolbar">
+        <div class="filter-group">
+          <input type="text" id="filterSearch" placeholder="🔍 Buscar por nome, cidade ou segmento..." class="input-search">
+          
+          <select id="filterCrmStage" class="select-filter">
+            <option value="">Todos os Estágios CRM</option>
+            <option value="NOVO">NOVO</option>
+            <option value="ANALISADO">ANALISADO</option>
+            <option value="CONTATO APROVADO">CONTATO APROVADO</option>
+            <option value="CONTATADO">CONTATADO</option>
+            <option value="RESPONDEU">RESPONDEU</option>
+            <option value="INTERESSADO">INTERESSADO</option>
+            <option value="REUNIÃO">REUNIÃO</option>
+            <option value="PROPOSTA">PROPOSTA</option>
+            <option value="CLIENTE">CLIENTE</option>
+            <option value="SEM INTERESSE">SEM INTERESSE</option>
+            <option value="NÃO RESPONDEU">NÃO RESPONDEU</option>
+          </select>
+
+          <select id="filterPriority" class="select-filter">
+            <option value="">Todas as Prioridades</option>
+            <option value="ALTA">Alta</option>
+            <option value="MEDIA">Média</option>
+            <option value="BAIXA">Baixa</option>
+            <option value="NAO_CLASSIFICADO">Não Classificado</option>
+          </select>
+        </div>
+
+        <div class="actions-group">
+          <button class="btn btn-secondary btn-sm" id="btnRefreshCompanies">🔄 Atualizar</button>
+        </div>
+      </div>
+
+      <!-- Tabela de Empresas -->
+      <div class="table-container">
+        <table class="data-table" id="companiesTable">
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>Categoria</th>
+              <th>Cidade</th>
+              <th>Avaliação</th>
+              <th>Qtd. Avaliações</th>
+              <th>Site</th>
+              <th>Telefone</th>
+              <th>Status</th>
+              <th>Prioridade</th>
+              <th>Última análise</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="companiesTableBody">
+            <tr>
+              <td colspan="11" class="text-center py-4">Carregando empresas...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- VIEW 2: PIPELINE CRM KANBAN -->
+    <section id="view-crm" class="view-section">
+      <div class="section-toolbar">
+        <div>
+          <h2>Funil de Vendas e Prospecção</h2>
+          <p class="section-desc">Acompanhamento visual de todos os leads por estágio do ciclo comercial.</p>
+        </div>
+        <button class="btn btn-secondary btn-sm" id="btnRefreshCrm">🔄 Atualizar CRM</button>
+      </div>
+
+      <div class="pipeline-board" id="pipelineBoard">
+        <!-- Renderizado dinamicamente via JS -->
+      </div>
+    </section>
+
+    <!-- VIEW 3: AUTOMAÇÕES -->
+    <section id="view-automations" class="view-section">
+      <div class="section-toolbar">
+        <div>
+          <h2>Motor de Automação Baseado em Estados</h2>
+          <p class="section-desc">Controle de tarefas, fila com timeout, retry limitado, backoff e recuperação de falhas.</p>
+        </div>
+        <div class="actions-group">
+          <button class="btn btn-danger btn-sm" id="btnRecoverJobs">🛡️ Recuperar Tarefas Interrompidas</button>
+          <button class="btn btn-secondary btn-sm" id="btnRefreshJobs">🔄 Atualizar Fila</button>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Tipo</th>
+              <th>Status</th>
+              <th>Tentativas</th>
+              <th>Criado em</th>
+              <th>Executado em</th>
+              <th>Próxima Execução</th>
+              <th>Último Erro</th>
+              <th>Ação</th>
+            </tr>
+          </thead>
+          <tbody id="jobsTableBody">
+            <!-- Renderizado dinamicamente -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- VIEW 4: INTEGRAÇÕES & TRANSPARÊNCIA -->
+    <section id="view-integrations" class="view-section">
+      <div class="section-toolbar">
+        <div>
+          <h2>Contratos de Integração e Transparência</h2>
+          <p class="section-desc">
+            Abstrações seguras. Na Fase 1 o disparo externo automático é desativado para supervisão humana total.
+          </p>
+        </div>
+      </div>
+
+      <div class="integrations-grid" id="integrationsGrid">
+        <!-- Renderizado dinamicamente com os 4 provedores -->
+      </div>
+    </section>
+
+    <!-- VIEW 5: LOGS DO SISTEMA -->
+    <section id="view-logs" class="view-section">
+      <div class="section-toolbar">
+        <div>
+          <h2>Trilha Imutável de Auditoria (System Logs)</h2>
+          <p class="section-desc">Registro estruturado de todas as operações realizadas pela IA, usuários e automações.</p>
+        </div>
+        <button class="btn btn-secondary btn-sm" id="btnRefreshLogs">🔄 Atualizar Logs</button>
+      </div>
+
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Data/Hora</th>
+              <th>Nível</th>
+              <th>Categoria</th>
+              <th>Ação</th>
+              <th>Mensagem</th>
+            </tr>
+          </thead>
+          <tbody id="logsTableBody">
+            <!-- Renderizado dinamicamente -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL: FICHA DA EMPRESA (6 ABAS: Resumo, Auditoria, Oportunidades, Mensagem, Histórico, CRM) -->
+  <div class="modal-backdrop" id="companyDetailModal">
+    <div class="modal-card modal-lg">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <h2 id="modalCompanyName">Nome da Empresa</h2>
+          <div class="modal-badges">
+            <span class="badge" id="modalCategoryBadge">Categoria</span>
+            <span class="badge" id="modalCityBadge">Cidade</span>
+            <span class="badge" id="modalStageBadge">NOVO</span>
+            <span class="badge" id="modalPriorityBadge">Prioridade</span>
+          </div>
+        </div>
+        <button class="modal-close-btn" id="btnCloseCompanyModal">&times;</button>
+      </div>
+
+      <!-- Abas da Ficha da Empresa -->
+      <div class="modal-tabs">
+        <button class="tab-btn active" data-tab="tab-resumo">📋 Resumo</button>
+        <button class="tab-btn" data-tab="tab-auditoria">🔍 Auditoria</button>
+        <button class="tab-btn" data-tab="tab-oportunidades">🎯 Oportunidades & Score</button>
+        <button class="tab-btn" data-tab="tab-mensagem">💬 Mensagem</button>
+        <button class="tab-btn" data-tab="tab-historico">📜 Histórico</button>
+        <button class="tab-btn" data-tab="tab-crm">💼 CRM & Propostas</button>
+      </div>
+
+      <div class="modal-body">
+        
+        <!-- ABA 1: RESUMO -->
+        <div id="tab-resumo" class="tab-content active">
+          <div class="card-section">
+            <div class="section-head-row">
+              <h3>Todos os Dados Encontrados (Sem Invenção de Fatos)</h3>
+              <button class="btn btn-primary btn-sm" id="btnRunFullAIFlow">⚡ Executar Ciclo Completo IA</button>
+            </div>
+            <div class="data-grid" id="collectedDataGrid">
+              <!-- Preenchido via JS exibindo NULL/Indisponível explicitamente quando ausente -->
+            </div>
+          </div>
+
+          <div class="card-section mt-4">
+            <div class="semantic-split-header">
+              <h3>Separação Semântica Transparente</h3>
+              <span class="badge badge-info">Auditoria Algorítmica</span>
+            </div>
+            <div class="three-columns-semantic">
+              <div class="semantic-col">
+                <h4 class="col-title text-indigo">📌 DADO COLETADO</h4>
+                <p class="col-desc">Fatos objetivos verificados no cadastro público.</p>
+                <div class="semantic-list" id="resumoCollectedFacts"></div>
+              </div>
+              <div class="semantic-col">
+                <h4 class="col-title text-amber">🧠 INFERÊNCIA DA IA</h4>
+                <p class="col-desc">Deduções baseadas estritamente nos dados coletados.</p>
+                <div class="semantic-list" id="resumoInferences"></div>
+              </div>
+              <div class="semantic-col">
+                <h4 class="col-title text-emerald">💡 RECOMENDAÇÃO</h4>
+                <p class="col-desc">Ações e oportunidades estratégicas propostas.</p>
+                <div class="semantic-list" id="resumoRecommendations"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ABA 2: AUDITORIA -->
+        <div id="tab-auditoria" class="tab-content">
+          <div class="section-head-row">
+            <div>
+              <h3>Diagnóstico e Auditoria Digital</h3>
+              <p class="text-muted" id="auditTimestampText">Nenhuma auditoria registrada ainda.</p>
+            </div>
+            <button class="btn btn-secondary btn-sm" id="btnRunAuditOnly">🔄 Reexecutar Auditoria</button>
+          </div>
+
+          <div class="audit-blocks-grid">
+            <div class="audit-block positive">
+              <h4>✅ Pontos Positivos</h4>
+              <ul id="auditPositiveList"><li>Carregando...</li></ul>
+            </div>
+            <div class="audit-block warning">
+              <h4>⚠️ Problemas Encontrados</h4>
+              <ul id="auditProblemsList"><li>Carregando...</li></ul>
+            </div>
+            <div class="audit-block opportunity">
+              <h4>🎯 Oportunidades</h4>
+              <ul id="auditOpportunitiesList"><li>Carregando...</li></ul>
+            </div>
+            <div class="audit-block info">
+              <h4>💡 Recomendações</h4>
+              <ul id="auditRecommendationsList"><li>Carregando...</li></ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- ABA 3: OPORTUNIDADES & LEAD SCORE -->
+        <div id="tab-oportunidades" class="tab-content">
+          <div class="score-card-hero">
+            <div class="score-circle" id="scoreCircle">
+              <span class="score-number" id="scoreNumber">--</span>
+              <span class="score-caption">Score</span>
+            </div>
+            <div class="score-info">
+              <div class="score-tags">
+                <span class="badge" id="scoreClassificationBadge">CLASSIFICAÇÃO</span>
+                <span class="badge" id="scorePriorityBadge">PRIORIDADE</span>
+              </div>
+              <h4 class="mt-2">Justificativa da Classificação:</h4>
+              <p class="score-rationale" id="scoreRationaleText">Nenhuma pontuação calculada.</p>
+            </div>
+            <button class="btn btn-secondary btn-sm" id="btnRunScoreOnly">Recalcular Score</button>
+          </div>
+        </div>
+
+        <!-- ABA 4: MENSAGEM -->
+        <div id="tab-mensagem" class="tab-content">
+          <div class="section-head-row">
+            <div>
+              <h3>Abordagem Comercial Personalizada</h3>
+              <p class="text-muted">Mensagem gerada por IA com base na auditoria. Requer validação e aprovação humana.</p>
+            </div>
+            <div class="actions-group">
+              <select id="msgChannelSelect" class="select-filter">
+                <option value="EMAIL">E-mail</option>
+                <option value="WHATSAPP">WhatsApp</option>
+                <option value="INSTAGRAM">Instagram</option>
+              </select>
+              <button class="btn btn-secondary btn-sm" id="btnGenerateNewMessage">Gerar Nova Mensagem</button>
+            </div>
+          </div>
+
+          <div class="message-viewer-card" id="messageViewerCard">
+            <div class="message-meta-row">
+              <div class="meta-item">
+                <strong>Canal:</strong> <span id="msgChannelDisplay">-</span>
+              </div>
+              <div class="meta-item">
+                <strong>Destinatário:</strong> <span id="msgRecipientDisplay">-</span>
+              </div>
+              <div class="meta-item">
+                <strong>Status:</strong> <span class="badge" id="msgStatusBadge">WAITING_APPROVAL</span>
+              </div>
+            </div>
+
+            <div class="message-field" id="msgSubjectContainer">
+              <label>Assunto:</label>
+              <input type="text" id="msgSubjectInput" class="input-text" readonly>
+            </div>
+
+            <div class="message-field">
+              <label>Corpo da Mensagem:</label>
+              <textarea id="msgBodyInput" class="input-textarea" rows="8" readonly></textarea>
+            </div>
+
+            <!-- Barra de Ações Práticas -->
+            <div class="notice-banner">
+              💡 <strong>Como enviar:</strong> Clique em <strong>APROVAR MENSAGEM</strong> para registrar no CRM. Você pode clicar em <strong>📲 Abrir no WhatsApp</strong> para abrir o WhatsApp Web/App com o texto já preenchido e pronto para disparar, ou <strong>📋 Copiar</strong> para colar onde quiser!
+            </div>
+
+            <!-- Botões de Ação -->
+            <div class="message-actions-bar">
+              <button class="btn btn-secondary" id="btnCopyMessage">📋 Copiar Texto</button>
+              <button class="btn btn-secondary" id="btnOpenEmailDirect">✉️ Abrir no E-mail</button>
+              <button class="btn btn-success" id="btnOpenWhatsAppDirect" style="background: #25d366; border-color: #20ba5a; font-weight: 600;">📲 Abrir no WhatsApp</button>
+              <button class="btn btn-secondary" id="btnToggleEditMessage">✏️ EDITAR</button>
+              <button class="btn btn-danger" id="btnRejectMessage">❌ REJEITAR</button>
+              <button class="btn btn-primary btn-lg" id="btnApproveMessage">✅ APROVAR MENSAGEM</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ABA 5: HISTÓRICO -->
+        <div id="tab-historico" class="tab-content">
+          <div class="section-head-row">
+            <h3>Linha do Tempo e Histórico Completo</h3>
+          </div>
+          <div class="timeline-container" id="historyTimeline">
+            <!-- Preenchido dinamicamente com auditorias, mensagens, decisões e transições de CRM -->
+          </div>
+        </div>
+
+        <!-- ABA 6: CRM & PROPOSTAS -->
+        <div id="tab-crm" class="tab-content">
+          <div class="section-head-row">
+            <div>
+              <h3>Controle de Estágio e Propostas Comerciais</h3>
+              <p class="text-muted">Avanço manual de funil e registro de oportunidades de negócio.</p>
+            </div>
+            <div class="actions-group">
+              <select id="crmStageSelector" class="select-filter">
+                <option value="NOVO">NOVO</option>
+                <option value="ANALISADO">ANALISADO</option>
+                <option value="CONTATO APROVADO">CONTATO APROVADO</option>
+                <option value="CONTATADO">CONTATADO</option>
+                <option value="RESPONDEU">RESPONDEU</option>
+                <option value="INTERESSADO">INTERESSADO</option>
+                <option value="REUNIÃO">REUNIÃO</option>
+                <option value="PROPOSTA">PROPOSTA</option>
+                <option value="CLIENTE">CLIENTE</option>
+                <option value="SEM INTERESSE">SEM INTERESSE</option>
+                <option value="NÃO RESPONDEU">NÃO RESPONDEU</option>
+              </select>
+              <button class="btn btn-secondary btn-sm" id="btnSaveStage">Salvar Estágio</button>
+            </div>
+          </div>
+
+          <!-- Seção de Propostas -->
+          <div class="card-section mt-4">
+            <div class="section-head-row">
+              <h4>Propostas Comerciais Vinculadas</h4>
+              <button class="btn btn-primary btn-sm" id="btnToggleNewProposal">+ Nova Proposta</button>
+            </div>
+
+            <!-- Form de Criação de Proposta -->
+            <form id="formNewProposal" class="form-compact hidden mt-3">
+              <div class="form-row">
+                <input type="text" id="propTitle" placeholder="Título da Proposta (Ex: Presença Digital Completa)" class="input-text" required>
+                <input type="number" id="propValue" placeholder="Valor Estimado (R$)" class="input-text" step="0.01">
+              </div>
+              <textarea id="propScope" placeholder="Escopo dos serviços recomendados pela auditoria..." class="input-textarea mt-2" rows="3" required></textarea>
+              <div class="form-actions mt-2">
+                <button type="submit" class="btn btn-primary btn-sm">Salvar Proposta</button>
+                <button type="button" class="btn btn-secondary btn-sm" id="btnCancelProposal">Cancelar</button>
+              </div>
+            </form>
+
+            <div class="proposals-list mt-3" id="proposalsListContainer">
+              <!-- Preenchido dinamicamente -->
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: CADASTRAR REGIÃO E SEGMENTO -->
+  <div class="modal-backdrop" id="regionModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Cadastrar Região e Segmento de Prospecção</h3>
+        <button class="modal-close-btn" id="btnCloseRegionModal">&times;</button>
+      </div>
+      <form id="formAddRegion" class="modal-body">
+        <div class="form-field">
+          <label>Região / Bairro:</label>
+          <input type="text" id="regRegion" placeholder="Ex: Zona Leste, Centro Expandido, Asa Norte" class="input-text" required>
+        </div>
+        <div class="form-field">
+          <label>Cidade:</label>
+          <input type="text" id="regCity" placeholder="Ex: São Paulo, Curitiba, Belo Horizonte" class="input-text" required>
+        </div>
+        <div class="form-field">
+          <label>Estado (UF):</label>
+          <input type="text" id="regState" placeholder="Ex: SP, PR, MG" class="input-text" maxlength="2">
+        </div>
+        <div class="form-field">
+          <label>Segmento de Mercado:</label>
+          <input type="text" id="regSegment" placeholder="Ex: Oficina Mecânica, Clínica Odontológica, Restaurante" class="input-text" required>
+        </div>
+        <div class="form-field">
+          <label>Descrição / Observações:</label>
+          <textarea id="regDescription" placeholder="Detalhes estratégicos deste segmento..." class="input-textarea" rows="2"></textarea>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" id="btnCancelRegionModal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Salvar Região & Segmento</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: IMPORTAR / CADASTRAR EMPRESAS -->
+  <div class="modal-backdrop" id="importModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Importar ou Cadastrar Empresas</h3>
+        <button class="modal-close-btn" id="btnCloseImportModal">&times;</button>
+      </div>
+      
+      <div class="modal-tabs">
+        <button class="tab-btn active" data-tab="tab-import-provider">⚡ Importar de Provedor</button>
+        <button class="tab-btn" data-tab="tab-register-manual">✍️ Cadastro Manual</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Aba 1: Importar do Provedor -->
+        <div id="tab-import-provider" class="tab-content active">
+          <p class="text-sm text-muted mb-3">
+            O provedor busca empresas diretamente no diretório do segmento e região. O sistema realiza deduplicação automática por CNPJ, domínio, telefone e nome+cidade.
+          </p>
+          <form id="formImportProvider">
+            <div class="form-field">
+              <label>Escolher de Regiões Salvas (opcional):</label>
+              <select id="importSelectRegion" class="select-filter full-width">
+                <option value="">-- Ou preencha diretamente os campos abaixo --</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <div class="form-field">
+                <label>Segmento de Prospecção:*</label>
+                <input type="text" id="importCustomSegment" class="input-text" placeholder="Ex: Oficina Mecânica, Barbearia, Odontologia" required>
+              </div>
+              <div class="form-field">
+                <label>Cidade:*</label>
+                <input type="text" id="importCustomCity" class="input-text" placeholder="Ex: São Paulo, Campinas, Curitiba, BH" required>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-field">
+                <label>Região / Bairro:</label>
+                <input type="text" id="importCustomRegion" class="input-text" placeholder="Ex: Zona Sul, Centro, Asa Norte">
+              </div>
+              <div class="form-field">
+                <label>Estado (UF):</label>
+                <input type="text" id="importCustomState" class="input-text" placeholder="SP, PR, MG, RJ" maxlength="2">
+              </div>
+            </div>
+            <div class="form-field">
+              <label>Quantidade de Empresas a Buscar/Importar:</label>
+              <input type="number" id="importLimit" value="5" min="1" max="20" class="input-text">
+            </div>
+            <div class="modal-actions mt-3">
+              <button type="button" class="btn btn-secondary" id="btnCancelImportModal">Cancelar</button>
+              <button type="submit" class="btn btn-primary">⚡ Executar Importação</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Aba 2: Cadastro Manual -->
+        <div id="tab-register-manual" class="tab-content">
+          <form id="formRegisterManual">
+            <div class="form-field">
+              <label>Nome Comercial:*</label>
+              <input type="text" id="manualName" class="input-text" required placeholder="Ex: Martelinho de Ouro Mooca">
+            </div>
+            <div class="form-row">
+              <div class="form-field">
+                <label>Segmento:*</label>
+                <input type="text" id="manualCategory" class="input-text" required placeholder="Ex: Oficina Mecânica">
+              </div>
+              <div class="form-field">
+                <label>CNPJ (opcional):</label>
+                <input type="text" id="manualCnpj" class="input-text" placeholder="00.000.000/0000-00">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-field">
+                <label>Região:*</label>
+                <input type="text" id="manualRegion" class="input-text" required placeholder="Ex: Zona Leste">
+              </div>
+              <div class="form-field">
+                <label>Cidade:*</label>
+                <input type="text" id="manualCity" class="input-text" required placeholder="Ex: São Paulo">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-field">
+                <label>Site (opcional):</label>
+                <input type="url" id="manualWebsite" class="input-text" placeholder="https://exemplo.com.br">
+              </div>
+              <div class="form-field">
+                <label>Telefone / WhatsApp:</label>
+                <input type="text" id="manualPhone" class="input-text" placeholder="(11) 98765-4321">
+              </div>
+            </div>
+            <div class="form-field">
+              <label>E-mail Comercial (opcional):</label>
+              <input type="email" id="manualEmail" class="input-text" placeholder="contato@empresa.com.br">
+            </div>
+            <div class="modal-actions mt-3">
+              <button type="button" class="btn btn-secondary" id="btnCancelManualModal">Cancelar</button>
+              <button type="submit" class="btn btn-primary">Cadastrar Empresa</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast de Notificação -->
+  <div id="toastNotification" class="toast">Notificação</div>
+
+  <script src="client-backend.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
