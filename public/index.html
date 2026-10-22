@@ -30,6 +30,7 @@
     </nav>
 
     <div class="header-right">
+      <button class="btn btn-secondary btn-sm" id="btnOpenLicenseModal" style="border-color: rgba(99, 102, 241, 0.5); color: #a5b4fc;" title="Gerenciar Chave de Acesso SaaS">🔑 Licença</button>
       <button class="btn btn-secondary btn-sm" id="btnCleanDatabase" style="border-color: rgba(239, 68, 68, 0.4); color: #fca5a5;" title="Apaga todas as empresas para iniciar limpo">🗑️ Limpar Banco</button>
       <button class="btn btn-secondary btn-sm" id="btnOpenManualModal">✍️ Cadastro Manual</button>
       <button class="btn btn-primary btn-sm" id="btnOpenProspectModal">🚀 Prospectar Empresas</button>
@@ -593,6 +594,36 @@
             </div>
           </form>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Ativação de Licença SaaS -->
+  <div id="licenseModal" class="modal-backdrop">
+    <div class="modal-card modal-md">
+      <div class="modal-header">
+        <div>
+          <h2 class="modal-title">🔑 Licenciamento Prospector IA SaaS</h2>
+          <p class="modal-subtitle">Ative sua chave única adquirida no Mercado Livre para liberar o acesso vitalício.</p>
+        </div>
+        <button class="modal-close" id="btnCloseLicenseModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="data-cell mb-3">
+          <div class="data-cell-label">Status da Licença:</div>
+          <div class="data-cell-value" id="licenseStatusDisplay" style="color: var(--emerald); font-weight: 600;">✅ LICENÇA ATIVA (SaaS Pro 2026)</div>
+        </div>
+        <form id="formActivateLicense">
+          <div class="form-field">
+            <label>Sua Chave Serial de Ativação:</label>
+            <input type="text" id="licenseKeyInput" class="input-text font-mono" placeholder="PROSP-2026-ML-XXXX-XXXX" required>
+            <small class="text-dim">Chave única e intransferível fornecida no chat da sua compra no Mercado Livre.</small>
+          </div>
+          <div class="modal-actions mt-3">
+            <button type="button" class="btn btn-secondary" id="btnCancelLicenseModal">Fechar</button>
+            <button type="submit" class="btn btn-primary">Validar e Registrar Licença</button>
+          </div>
+        </form>
       </div>
     </div>
   </div>

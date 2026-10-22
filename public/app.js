@@ -785,6 +785,55 @@ function setupModals() {
     openProspectModal();
   });
 
+  // Modal de Licença SaaS (Mercado Livre)
+  on('btnOpenLicenseModal', 'click', () => {
+    const saved = localStorage.getItem('prospector_ia_license');
+    const display = document.getElementById('licenseStatusDisplay');
+    const input = document.getElementById('licenseKeyInput');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (display) display.innerHTML = `✅ ATIVA: <code>${parsed.key}</code> (${parsed.plan || 'SaaS Pro Vitalício'})`;
+        if (input) input.value = parsed.key;
+      } catch {}
+    } else {
+      if (display) display.innerHTML = `⚠️ Modo Demonstração (Insira sua chave do Mercado Livre)`;
+    }
+    const modal = document.getElementById('licenseModal');
+    if (modal) modal.classList.add('active');
+  });
+
+  on('btnCloseLicenseModal', 'click', () => {
+    const modal = document.getElementById('licenseModal');
+    if (modal) modal.classList.remove('active');
+  });
+
+  on('btnCancelLicenseModal', 'click', () => {
+    const modal = document.getElementById('licenseModal');
+    if (modal) modal.classList.remove('active');
+  });
+
+  on('formActivateLicense', 'submit', (e) => {
+    e.preventDefault();
+    const key = document.getElementById('licenseKeyInput')?.value?.trim().toUpperCase();
+    if (!key || key.length < 10) {
+      showToast('Por favor, informe uma chave de licença válida.', true);
+      return;
+    }
+    const licenseData = {
+      key: key,
+      status: 'ATIVA',
+      plan: 'SaaS Pro 2026 Vitalício',
+      activatedAt: new Date().toISOString()
+    };
+    localStorage.setItem('prospector_ia_license', JSON.stringify(licenseData));
+    const display = document.getElementById('licenseStatusDisplay');
+    if (display) display.innerHTML = `✅ ATIVA: <code>${key}</code> (SaaS Pro 2026 Vitalício)`;
+    showToast('🎉 Licença ativada com sucesso! Todos os recursos liberados.');
+    const modal = document.getElementById('licenseModal');
+    if (modal) modal.classList.remove('active');
+  });
+
   // Modal de Cadastro Manual (Abrir Aba Manual)
   on('btnOpenManualModal', 'click', () => {
     document.querySelectorAll('#importModal .tab-btn').forEach(b => b.classList.remove('active'));

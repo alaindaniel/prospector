@@ -1,0 +1,26 @@
+{
+  "family_name": "Software Prospector Ia Prospeccao B2b Crm Whatsapp",
+  "category_id": "MLB1728",
+  "price": 78.90,
+  "currency_id": "BRL",
+  "available_quantity": 10,
+  "buying_mode": "buy_it_now",
+  "condition": "new",
+  "listing_type_id": "gold_special",
+  "description_text": "⚡ PROSPECTOR IA 2026 — SISTEMA COMPLETO DE PROSPECÇÃO B2B, AUDITORIA DIGITAL E CRM COM WHATSAPP\n\nTurbine a captação de clientes da sua agência ou negócio B2B com a ferramenta mais moderna e inteligente do mercado! Localize empresas locais com dados reais, gere diagnósticos automáticos por IA e envie abordagens comerciais personalizadas direto no WhatsApp com apenas 1 clique.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n🚀 PRINCIPAIS BENEFÍCIOS E RECURSOS:\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n✅ PROSPECÇÃO REGIONAL POR NICHO: Encontre clientes no seu segmento e cidade desejada (Oficinas, Clínicas, Dentistas, Escritórios de Advocacia, Pet Shops e Comércios).\n\n✅ TELEFONES REAIS COM DDD: Normalização de contatos com 11 dígitos já pronta para o WhatsApp nacional sem erros de formatação.\n\n✅ AUDITORIA DIGITAL COMPLETA: O sistema analisa a presença web do lead, nota no Google, volume de avaliações e identifica oportunidades de novos contratos.\n\n✅ DIAGNÓSTICO ESTRUTURADO COM IA: Separação clara entre Dado Coletado, Inferência da IA e Recomendações práticas para sua proposta.\n\n✅ MINUTAS DE ABORDAGEM PERSONALIZADAS: A IA redige mensagens consultivas sob medida com base nos pontos fracos e fortes da empresa para WhatsApp e E-mail.\n\n✅ BOTÃO DIRETO 📲 'ABRIR NO WHATSAPP': Clique e abra a conversa no WhatsApp Web ou App oficial com o texto pronto e número pré-preenchido.\n\n✅ PIPELINE KANBAN DE CRM: Acompanhe a jornada do lead em estágios visuais (Novo, Analisado, Contato Aprovado, Contatado, Respondeu, Proposta e Cliente).\n\n✅ HISTÓRICO E AUDITORIA COMPLETA: Trilha de logs e auditoria transparente para controle total.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n📦 FORMA DE ENTREGA E ATIVAÇÃO (ENVIO DIGITAL IMEDIATO):\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n1. Após a aprovação da compra, o envio é realizado imediatamente pelo chat interno do Mercado Livre.\n2. Você recebe sua Chave de Licença de Acesso Única e o link oficial da plataforma SaaS para uso imediato no navegador (sem necessidade de instalações pesadas).\n3. Suporte humanizado e garantia de funcionamento.\n\n🔒 AVISO LEGAL E GARANTIA: Produto digital entregue com chave de ativação exclusiva vinculada ao comprador. Testado e homologado para os principais navegadores modernos (Chrome, Edge, Firefox, Safari).",
+  "pictures": [
+    {
+      "source": "https://raw.githubusercontent.com/alaindaniel/prospector/main/public/prospector_capa.png"
+    }
+  ],
+  "attributes": [
+    { "id": "DEVELOPER", "value_name": "Prospector IA" },
+    { "id": "SOFTWARE_NAME", "value_name": "Prospector IA" },
+    { "id": "VERSION", "value_name": "2026 SaaS Pro" }
+  ],
+  "shipping": {
+    "mode": "not_specified",
+    "local_pick_up": true,
+    "free_shipping": false
+  }
+}
