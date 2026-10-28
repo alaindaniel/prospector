@@ -602,5 +602,89 @@ export const VERIFIED_REAL_BUSINESSES: VerifiedBusiness[] = [
     contactName: 'Equipe Grão Real',
     contactRole: 'Barista e Atendimento',
     keywords: ['cafe', 'cafeteria', 'lanche', 'nova iguacu']
+  },
+
+  // ==========================================
+  // GINECOLOGIA, OBSTETRÍCIA & CLÍNICAS MÉDICAS - TIJUCA / RJ
+  // ==========================================
+  {
+    name: 'CGO - Centro de Ginecologia e Obstetrícia Tijuca',
+    category: 'Ginecologia e Obstetrícia',
+    region: 'Tijuca',
+    city: 'Rio de Janeiro',
+    state: 'RJ',
+    address: 'Rua Conde de Bonfim, 297, Grupo 806 (Praça Saens Peña)',
+    rating: 4.8,
+    reviewCount: 185,
+    website: 'https://centrodeginecologia.com.br',
+    phone: '(21) 2486-0644',
+    whatsapp: '(21) 98104-5753',
+    contactName: 'Central de Agendamento CGO',
+    contactRole: 'Recepção e Atendimento',
+    keywords: ['obstetra', 'obstetricia', 'ginecologia', 'ginecologista', 'medico', 'clinica medica', 'parto', 'prenatal', 'tijuca', 'rio de janeiro']
+  },
+  {
+    name: 'Clínica Nattus (Ginecologia, Obstetrícia & Fetal)',
+    category: 'Ginecologia e Obstetrícia',
+    region: 'Tijuca',
+    city: 'Rio de Janeiro',
+    state: 'RJ',
+    address: 'Rua Eng. Enaldo Cravo Peixoto, 105, Sala 613',
+    rating: 4.9,
+    reviewCount: 140,
+    website: 'https://clinicanattus.com.br',
+    phone: '(21) 3251-9717',
+    whatsapp: '(21) 98104-5753',
+    contactName: 'Equipe Clínica Nattus',
+    contactRole: 'Atendimento ao Paciente',
+    keywords: ['obstetra', 'obstetricia', 'ginecologia', 'ginecologista', 'medicina fetal', 'ultrassom', 'gravidez', 'tijuca', 'rio de janeiro']
+  },
+  {
+    name: 'Dra. Milena Monteiro - Ginecologia e Obstetrícia',
+    category: 'Ginecologia e Obstetrícia',
+    region: 'Tijuca',
+    city: 'Rio de Janeiro',
+    state: 'RJ',
+    address: 'Rua Conde de Bonfim, 310, Sala 409',
+    rating: 4.9,
+    reviewCount: 95,
+    website: 'https://milenamonteiro.com.br',
+    phone: '(21) 97269-8779',
+    whatsapp: '(21) 97269-8779',
+    contactName: 'Dra. Milena Monteiro',
+    contactRole: 'Médica Ginecologista e Obstetra',
+    keywords: ['obstetra', 'obstetricia', 'ginecologia', 'ginecologista', 'medica', 'parto humanizado', 'tijuca', 'rio de janeiro']
+  },
+  {
+    name: 'Dra. Rafaela Britto - Ginecologista e Obstetra',
+    category: 'Ginecologia e Obstetrícia',
+    region: 'Tijuca',
+    city: 'Rio de Janeiro',
+    state: 'RJ',
+    address: 'Rua Conde de Bonfim, 344, Bloco 1, Sala 501',
+    rating: 4.8,
+    reviewCount: 88,
+    website: 'https://drarafaelabritto.com.br',
+    phone: '(21) 97294-7353',
+    whatsapp: '(21) 97294-7353',
+    contactName: 'Recepção Dra. Rafaela',
+    contactRole: 'Atendimento e Agendamentos',
+    keywords: ['obstetra', 'obstetricia', 'ginecologia', 'ginecologista', 'mulher', 'saude da mulher', 'tijuca', 'rio de janeiro']
+  },
+  {
+    name: 'Genita Clínica Ginecológica e Obstétrica',
+    category: 'Ginecologia e Obstetrícia',
+    region: 'Tijuca',
+    city: 'Rio de Janeiro',
+    state: 'RJ',
+    address: 'Rua Conde de Bonfim, 344, Bloco 1, Sala 602',
+    rating: 4.7,
+    reviewCount: 110,
+    website: null,
+    phone: '(21) 2569-3425',
+    whatsapp: '(21) 99256-6819',
+    contactName: 'Recepção Genita',
+    contactRole: 'Secretaria Médica',
+    keywords: ['obstetra', 'obstetricia', 'ginecologia', 'ginecologista', 'prenatal', 'tijuca', 'rio de janeiro']
   }
 ];

@@ -30,41 +30,58 @@ export class LocalCatalogCompanyDataProvider implements CompanyDataProvider {
     const cityNorm = (query.city || '').toLowerCase().trim();
     const regionNorm = (query.region || '').toLowerCase().trim();
 
-    const queryTerms = `${segmentNorm} ${cityNorm} ${regionNorm}`
-      .split(/[\s,/-]+/)
-      .filter((t) => t.length > 2);
+    const segmentTerms = segmentNorm.split(/[\s,/-]+/).filter((t) => t.length > 2);
+    const locationTerms = `${cityNorm} ${regionNorm}`.split(/[\s,/-]+/).filter((t) => t.length > 2);
 
     // Ranqueia os negócios reais verificados por relevância da pesquisa
     const scored: { business: VerifiedBusiness; score: number }[] = VERIFIED_REAL_BUSINESSES.map((b) => {
-      let score = 0;
-      const bText = `${b.name} ${b.category} ${b.region} ${b.city} ${b.keywords.join(' ')}`.toLowerCase();
+      let segmentScore = 0;
+      let locationScore = 0;
+      const bText = `${b.name} ${b.category} ${b.keywords.join(' ')}`.toLowerCase();
+      const bLoc = `${b.region} ${b.city}`.toLowerCase();
 
-      for (const term of queryTerms) {
+      for (const term of segmentTerms) {
         if (b.keywords.some((kw) => kw.includes(term) || term.includes(kw))) {
-          score += 10;
+          segmentScore += 15;
         }
-        if (b.category.toLowerCase().includes(term)) {
-          score += 8;
+        if (b.category.toLowerCase().includes(term) || term.includes(b.category.toLowerCase())) {
+          segmentScore += 12;
         }
-        if (b.region.toLowerCase().includes(term)) {
-          score += 5;
-        }
-        if (b.city.toLowerCase().includes(term)) {
-          score += 4;
+        if (b.name.toLowerCase().includes(term)) {
+          segmentScore += 8;
         }
         if (bText.includes(term)) {
-          score += 2;
+          segmentScore += 4;
         }
       }
 
-      return { business: b, score };
+      for (const term of locationTerms) {
+        if (b.region.toLowerCase().includes(term)) {
+          locationScore += 6;
+        }
+        if (b.city.toLowerCase().includes(term)) {
+          locationScore += 4;
+        }
+        if (bLoc.includes(term)) {
+          locationScore += 2;
+        }
+      }
+
+      // Se um segmento foi especificado, a empresa DEVE ter compatibilidade com o segmento.
+      // Nunca retorna um salão de beleza quando se busca por obstetra!
+      if (segmentTerms.length > 0 && segmentScore === 0) {
+        return { business: b, score: -1 };
+      }
+
+      return { business: b, score: segmentScore * 2 + locationScore };
     });
 
-    // Ordena pelo score decrescente
-    scored.sort((a, b) => b.score - a.score);
+    // Filtra apenas empresas com compatibilidade real
+    const validMatches = scored.filter((s) => s.score > 0);
+    validMatches.sort((a, b) => b.score - a.score);
 
     // Pega os melhores resultados reais até o limite
-    const selected = scored.slice(0, limit).map((s) => s.business);
+    const selected = validMatches.slice(0, limit).map((s) => s.business);
 
     return selected.map((b) => ({
       name: b.name,

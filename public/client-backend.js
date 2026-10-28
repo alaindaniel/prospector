@@ -619,43 +619,145 @@
       contactName: 'Equipe Grão Real',
       contactRole: 'Barista e Atendimento',
       keywords: ['cafe', 'cafeteria', 'lanche', 'nova iguacu']
+    },
+
+    // ----------------------------------------------------
+    // GINECOLOGIA, OBSTETRÍCIA & CLÍNICAS MÉDICAS - TIJUCA / RJ
+    // ----------------------------------------------------
+    {
+      name: 'CGO - Centro de Ginecologia e Obstetrícia Tijuca',
+      category: 'Ginecologia e Obstetrícia',
+      region: 'Tijuca',
+      city: 'Rio de Janeiro',
+      state: 'RJ',
+      address: 'Rua Conde de Bonfim, 297, Grupo 806 (Praça Saens Peña)',
+      rating: 4.8,
+      reviewCount: 185,
+      website: 'https://centrodeginecologia.com.br',
+      phone: '(21) 2486-0644',
+      whatsapp: '(21) 98104-5753',
+      contactName: 'Central de Agendamento CGO',
+      contactRole: 'Recepção e Atendimento',
+      keywords: ['obstetra', 'obstetricia', 'ginecologia', 'ginecologista', 'medico', 'clinica medica', 'parto', 'prenatal', 'tijuca', 'rio de janeiro']
+    },
+    {
+      name: 'Clínica Nattus (Ginecologia, Obstetrícia & Fetal)',
+      category: 'Ginecologia e Obstetrícia',
+      region: 'Tijuca',
+      city: 'Rio de Janeiro',
+      state: 'RJ',
+      address: 'Rua Eng. Enaldo Cravo Peixoto, 105, Sala 613',
+      rating: 4.9,
+      reviewCount: 140,
+      website: 'https://clinicanattus.com.br',
+      phone: '(21) 3251-9717',
+      whatsapp: '(21) 98104-5753',
+      contactName: 'Equipe Clínica Nattus',
+      contactRole: 'Atendimento ao Paciente',
+      keywords: ['obstetra', 'obstetricia', 'ginecologia', 'ginecologista', 'medicina fetal', 'ultrassom', 'gravidez', 'tijuca', 'rio de janeiro']
+    },
+    {
+      name: 'Dra. Milena Monteiro - Ginecologia e Obstetrícia',
+      category: 'Ginecologia e Obstetrícia',
+      region: 'Tijuca',
+      city: 'Rio de Janeiro',
+      state: 'RJ',
+      address: 'Rua Conde de Bonfim, 310, Sala 409',
+      rating: 4.9,
+      reviewCount: 95,
+      website: 'https://milenamonteiro.com.br',
+      phone: '(21) 97269-8779',
+      whatsapp: '(21) 97269-8779',
+      contactName: 'Dra. Milena Monteiro',
+      contactRole: 'Médica Ginecologista e Obstetra',
+      keywords: ['obstetra', 'obstetricia', 'ginecologia', 'ginecologista', 'medica', 'parto humanizado', 'tijuca', 'rio de janeiro']
+    },
+    {
+      name: 'Dra. Rafaela Britto - Ginecologista e Obstetra',
+      category: 'Ginecologia e Obstetrícia',
+      region: 'Tijuca',
+      city: 'Rio de Janeiro',
+      state: 'RJ',
+      address: 'Rua Conde de Bonfim, 344, Bloco 1, Sala 501',
+      rating: 4.8,
+      reviewCount: 88,
+      website: 'https://drarafaelabritto.com.br',
+      phone: '(21) 97294-7353',
+      whatsapp: '(21) 97294-7353',
+      contactName: 'Recepção Dra. Rafaela',
+      contactRole: 'Atendimento e Agendamentos',
+      keywords: ['obstetra', 'obstetricia', 'ginecologia', 'ginecologista', 'mulher', 'saude da mulher', 'tijuca', 'rio de janeiro']
+    },
+    {
+      name: 'Genita Clínica Ginecológica e Obstétrica',
+      category: 'Ginecologia e Obstetrícia',
+      region: 'Tijuca',
+      city: 'Rio de Janeiro',
+      state: 'RJ',
+      address: 'Rua Conde de Bonfim, 344, Bloco 1, Sala 602',
+      rating: 4.7,
+      reviewCount: 110,
+      website: null,
+      phone: '(21) 2569-3425',
+      whatsapp: '(21) 99256-6819',
+      contactName: 'Recepção Genita',
+      contactRole: 'Secretaria Médica',
+      keywords: ['obstetra', 'obstetricia', 'ginecologia', 'ginecologista', 'prenatal', 'tijuca', 'rio de janeiro']
     }
   ];
 
-  // Busca e ranqueia empresas reais verificadas por relevância
+  // Busca e ranqueia empresas reais verificadas com compatibilidade estrita de segmento
   function findVerifiedBusinesses(segment, city, region, limit = 5, existingCompanies = []) {
     const existingNames = new Set(existingCompanies.map(c => (c.name || '').toLowerCase().trim()));
     const segClean = (segment || '').toLowerCase().trim();
     const cityClean = (city || '').toLowerCase().trim();
     const regClean = (region || '').toLowerCase().trim();
 
-    const searchTerms = `${segClean} ${cityClean} ${regClean}`
-      .split(/[\s,/-]+/)
-      .filter(t => t.length > 2);
+    const segmentTerms = segClean.split(/[\s,/-]+/).filter(t => t.length > 2);
+    const locationTerms = `${cityClean} ${regClean}`.split(/[\s,/-]+/).filter(t => t.length > 2);
 
     const scored = VERIFIED_REAL_BUSINESSES.map(b => {
-      let score = 0;
-      const bText = `${b.name} ${b.category} ${b.region} ${b.city} ${b.keywords.join(' ')}`.toLowerCase();
+      let segmentScore = 0;
+      let locationScore = 0;
+      const bText = `${b.name} ${b.category} ${b.keywords.join(' ')}`.toLowerCase();
+      const bLoc = `${b.region} ${b.city}`.toLowerCase();
 
-      for (const term of searchTerms) {
-        if (b.keywords.some(kw => kw.includes(term) || term.includes(kw))) score += 12;
-        if (b.category.toLowerCase().includes(term)) score += 9;
-        if (b.region.toLowerCase().includes(term)) score += 6;
-        if (b.city.toLowerCase().includes(term)) score += 4;
-        if (bText.includes(term)) score += 2;
+      // Compatibilidade do segmento solicitado
+      for (const term of segmentTerms) {
+        if (b.keywords.some(kw => kw.includes(term) || term.includes(kw))) segmentScore += 18;
+        if (b.category.toLowerCase().includes(term) || term.includes(b.category.toLowerCase())) segmentScore += 15;
+        if (b.name.toLowerCase().includes(term)) segmentScore += 10;
+        if (bText.includes(term)) segmentScore += 4;
       }
+
+      // Compatibilidade da localidade
+      for (const term of locationTerms) {
+        if (b.region.toLowerCase().includes(term)) locationScore += 6;
+        if (b.city.toLowerCase().includes(term)) locationScore += 4;
+        if (bLoc.includes(term)) locationScore += 2;
+      }
+
+      // REGRA DE SEGURANÇA:
+      // Se um segmento foi digitado, a empresa DEVE ter pontuação de segmento!
+      // Uma empresa nunca pode ser retornada por mera coincidência de cidade/bairro.
+      if (segmentTerms.length > 0 && segmentScore === 0) {
+        return { business: b, score: -1 };
+      }
+
+      let totalScore = segmentScore * 2 + locationScore;
 
       // Penaliza se já está na lista atual para favorecer novas descobertas
       if (existingNames.has(b.name.toLowerCase().trim())) {
-        score -= 20;
+        totalScore -= 25;
       }
 
-      return { business: b, score };
+      return { business: b, score: totalScore };
     });
 
-    scored.sort((a, b) => b.score - a.score);
+    const validMatches = scored.filter(s => s.score > 0);
+    validMatches.sort((a, b) => b.score - a.score);
 
-    return scored.slice(0, limit).map(s => s.business);
+    return validMatches.slice(0, limit).map(s => s.business);
   }
 
   // Converte a empresa real em modelo interno do Prospector
@@ -686,7 +788,8 @@
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
       contactName: b.contactName,
-      contactRole: b.contactRole
+      contactRole: b.contactRole,
+      keywords: b.keywords || []
     };
   }
 
@@ -940,9 +1043,44 @@
         return { imported, updated: 0, companies };
       }
 
-      // 4. GET /api/companies
+      // 4. GET /api/companies (com filtros de busca inteligente, crm_stage e priority)
       if ((path === '/api/companies' || path.startsWith('/api/companies?')) && method === 'GET') {
-        return getStorage('companies', []);
+        let list = getStorage('companies', []);
+        const queryIndex = path.indexOf('?');
+        if (queryIndex !== -1) {
+          const queryString = path.substring(queryIndex + 1);
+          const params = new URLSearchParams(queryString);
+          const rawSearch = (params.get('search') || '').trim();
+          const crmStage = (params.get('crm_stage') || '').toUpperCase().trim();
+          const priority = (params.get('priority') || '').toUpperCase().trim();
+
+          if (rawSearch) {
+            const searchNorm = rawSearch.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+            const searchRoot = searchNorm.length > 5 ? searchNorm.substring(0, searchNorm.length - 2) : searchNorm;
+
+            list = list.filter(c => {
+              const fullText = (
+                (c.name || '') + ' ' +
+                (c.category || '') + ' ' +
+                (c.city || '') + ' ' +
+                (c.region || '') + ' ' +
+                (c.address || '') + ' ' +
+                ((c.keywords || []).join(' '))
+              ).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+
+              return fullText.includes(searchNorm) || (searchRoot.length >= 4 && fullText.includes(searchRoot));
+            });
+          }
+
+          if (crmStage) {
+            list = list.filter(c => (c.crm_stage || '').toUpperCase() === crmStage);
+          }
+
+          if (priority) {
+            list = list.filter(c => (c.priority || '').toUpperCase() === priority);
+          }
+        }
+        return list;
       }
 
       // 5. GET /api/companies/:id
