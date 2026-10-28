@@ -703,11 +703,17 @@
       localStorage.removeItem(STORAGE_KEY_PREFIX + 'communications');
       localStorage.removeItem(STORAGE_KEY_PREFIX + 'proposals');
       localStorage.removeItem(STORAGE_KEY_PREFIX + 'regions');
+      localStorage.removeItem(STORAGE_KEY_PREFIX + 'user_has_cleared');
       localStorage.setItem(DB_VERSION_KEY, CURRENT_DB_VERSION);
     }
 
+    // Se o usuário limpou o banco manualmente, respeita a decisão e não reinsere nada
+    if (getStorage('user_has_cleared', false) === true) {
+      return;
+    }
+
     const existing = getStorage('companies', null);
-    if (existing && existing.length > 0) return;
+    if (existing !== null) return;
 
     // Seeds com 4 empresas reais e telefones/WhatsApp autênticos
     const initialCandidates = [
@@ -892,6 +898,7 @@
 
       // 3. POST /api/companies/import (IMPORTAÇÃO DE EMPRESAS REAIS VERIFICADAS)
       if (path === '/api/companies/import' && method === 'POST') {
+        setStorage('user_has_cleared', false);
         const { segment = 'Salão de Beleza', city = 'Rio de Janeiro', region = 'Tijuca', limit = 5 } = body;
         const companies = getStorage('companies', []);
         const contacts = getStorage('contacts', []);
@@ -1209,18 +1216,18 @@
         return { pipeline, total: companies.length };
       }
 
-      // 11. POST /api/system/reset
-      if (path === '/api/system/reset' && method === 'POST') {
-        localStorage.removeItem(STORAGE_KEY_PREFIX + 'companies');
-        localStorage.removeItem(STORAGE_KEY_PREFIX + 'contacts');
-        localStorage.removeItem(STORAGE_KEY_PREFIX + 'audits');
-        localStorage.removeItem(STORAGE_KEY_PREFIX + 'lead_scores');
-        localStorage.removeItem(STORAGE_KEY_PREFIX + 'messages');
-        localStorage.removeItem(STORAGE_KEY_PREFIX + 'logs');
-        localStorage.removeItem(STORAGE_KEY_PREFIX + 'regions');
-        localStorage.removeItem(DB_VERSION_KEY);
-        initSeedData();
-        return { success: true, message: 'Banco reinicializado com empresas reais verificadas.' };
+      // 11. POST /api/database/clear-all ou POST /api/system/reset (LIMPAR TUDO)
+      if ((path === '/api/database/clear-all' || path === '/api/system/reset') && method === 'POST') {
+        setStorage('companies', []);
+        setStorage('contacts', []);
+        setStorage('audits', []);
+        setStorage('lead_scores', []);
+        setStorage('messages', []);
+        setStorage('communications', []);
+        setStorage('proposals', []);
+        setStorage('logs', []);
+        setStorage('user_has_cleared', true);
+        return { success: true, message: 'Todas as empresas e históricos foram excluídos com sucesso.' };
       }
 
       // 12. GET /api/providers/manifests

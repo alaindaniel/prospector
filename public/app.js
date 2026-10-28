@@ -772,7 +772,7 @@ function setupModals() {
       showToast('Limpando banco de dados...');
       await api('/api/database/clear-all', { method: 'POST' });
       state.companies = [];
-      await loadCompanies();
+      renderCompaniesTable([]);
       await refreshStats();
       showToast('🗑️ Banco limpo com sucesso! 0 empresas.');
     } catch (err) {
@@ -1185,7 +1185,7 @@ on('btnRefreshLogs', 'click', loadSystemLogs);
 // 9. Estatísticas do Topo
 async function refreshStats() {
   try {
-    const companies = state.companies.length > 0 ? state.companies : await api('/api/companies');
+    const companies = Array.isArray(state.companies) ? state.companies : await api('/api/companies');
     const totalEl = document.getElementById('statTotalCompanies');
     if (totalEl) totalEl.textContent = companies.length;
     
